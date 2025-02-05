@@ -9,7 +9,7 @@ GENDER_DICT = {0: 'male', 1: 'female'}
 onnx_session = onnxruntime.InferenceSession('models-2020-11-20-14-37/best-epoch47-0.9314.onnx')
 detector = dlib.get_frontal_face_detector()
 
-img = cv2.imread('test.jpg')
+img = cv2.imread('3.jpg')
 face_rects = detector(cv2.cvtColor(img, cv2.COLOR_BGR2GRAY), 0)
 
 for face_rect in face_rects:
@@ -18,6 +18,7 @@ for face_rect in face_rects:
                   (face_rect.right(), face_rect.bottom()),
                   (255, 255, 255))
     face = img[face_rect.top():face_rect.bottom(), face_rect.left():face_rect.right(), :]
+    cv2.imwrite("crop2.jpg", img);
     inputs = np.transpose(cv2.resize(face, (64, 64)), (2, 0, 1))
     inputs = np.expand_dims(inputs, 0).astype(np.float32) / 255.
     predictions = onnx_session.run(['output'], input_feed={'input': inputs})[0][0]
@@ -27,4 +28,5 @@ for face_rect in face_rects:
     print('Gender: {}, Age: {}'.format(gender, age))
 
 cv2.imshow('', img)
-cv2.waitKey()
+cv2.imwrite('result_3.jpg',img)
+cv2.waitKey(1)
